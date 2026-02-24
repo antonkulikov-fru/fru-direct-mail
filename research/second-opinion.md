@@ -32,7 +32,7 @@ You have successfully moved the offline donor to a screen to leverage FundraiseU
 
 ### Step 5: Monetization & The Loop
 * **The Metric:** The donor's profile updates to reflect their new digital LTV, tracking how migration increases lifetime value.
-* **The Revenue:** You offer the initial data ingestion as a flat SaaS add-on or for free, and instead monetize downstream digital growth. You capture the platform/processing fee on the new, highly optimized digital transaction.
+* **The Revenue:** Data ingestion is a support capability and not monetized directly. Revenue is captured downstream on converted digital transactions via platform/processing fees.
 
 ### Step 6: Controls and Exceptions (The Operating Reality)
 * **Exception Queues:** Support explicit paths for USD cheques, post-dated cheques, unreadable/unscannable items, and mailed credit-card rejections.
