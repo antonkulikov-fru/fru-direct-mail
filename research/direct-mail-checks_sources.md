@@ -1,0 +1,20 @@
+# Sources (links)
+
+This is the link list for the sources referenced in the direct-mail-checks analysis.
+
+- [Giving USA 2025: U.S. charitable giving grew to $592.50 billion in 2024, lifted by stock market gains (GivingUSA.org)](https://givingusa.org/giving-usa-2025-u-s-charitable-giving-grew-to-592-50-billion-in-2024-lifted-by-stock-market-gains/)
+- [Giving USA 2025 news page (Indiana University Lilly Family School of Philanthropy)](https://philanthropy.indianapolis.iu.edu/news-events/news/_news/2025/giving-usa-2025.html)
+- [Younger Donors Are Leading a Quiet Comeback for Direct Mail Fundraising (PR Newswire; references Giving by Generation 2025)](https://www.prnewswire.com/news-releases/younger-donors-are-leading-a-quiet-comeback-for-direct-mail-fundraising-302431692.html)
+- [Direct Mail is Dead. Long Live Direct Mail! (Association of Fundraising Professionals; Harry Lynch)](https://afpglobal.org/direct-mail-dead-long-live-direct-mail)
+- [Digital Wallets Surpass Checks for Charitable Donations (NonProfit PRO; Bloomerang report coverage)](https://www.nonprofitpro.com/article/bloomerang-report-reveals-digital-wallets-surpass-checks-for-charitable-donations/)
+- [Bloomerang’s Generational Giving Report Reveals Digital Wallets Surpass Checks (PR Newswire)](https://www.prnewswire.com/news-releases/bloomerangs-generational-giving-report-reveals-digital-wallets-surpass-checks-for-charitable-donations-302231092.html)
+- [Bloomerang and Qgiv Release Generational Giving Report (Qgiv blog; includes ‘digital wallets surpass checks’ detail)](https://www.qgiv.com/blog/bloomerang-releases-generational-giving-report-copy/)
+- [Charitable Giving by Generation: Key Insights for Nonprofits (Sylogist)](https://sylogist.com/blog/charitable-giving-across-generations-2/)
+- [The Ultimate List of Charitable Giving Statistics for 2024 (Nonprofits Source)](https://nonprofitssource.com/online-giving-statistics/)
+- [3 problems that seniors experience when donating online (Mindwize)](https://mindwize.org/tips-en/3-problems-that-seniors-experience-when-donating-online-and-how-to-solve-them/)
+- [Are Americans Embracing Mobile Payments? (The Pew Charitable Trusts, issue brief)](https://www.pew.org/en/research-and-analysis/issue-briefs/2019/10/are-americans-embracing-mobile-payments)
+- [Are Americans Embracing Mobile Payments? (Pew PDF)](https://www.pew.org/-/media/assets/2019/10/mobilepayments_brief_final.pdf)
+- [Latest Blackbaud Institute Data Reveals 2024 Charitable Giving Neared All-Time High (Blackbaud)](https://www.blackbaud.com/newsroom/article/latest-blackbaud-institute-data-reveals-2024-charitable-giving-neared-all-time-high)
+- [Data Reveals 2024 Charitable Giving Neared All-Time High (NonProfit PRO; covers Blackbaud Institute findings)](https://www.nonprofitpro.com/article/data-reveals-2024-charitable-giving-neared-all-time-high/)
+- [Alumni Donations: Strategies, Benefits, and Trends for Schools (Paybee)](https://w.paybee.io/post/alumni-donations)
+- [3 Insights from Giving USA’s “Giving by Generation” Special Report (NonProfit PRO; older edition but useful context)](https://www.nonprofitpro.com/article/3-insights-from-giving-usas-giving-by-generation-special-report/)
