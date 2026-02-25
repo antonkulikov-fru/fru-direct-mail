@@ -13,7 +13,7 @@
 - **OKR:** Increase enterprise penetration and net revenue by converting direct-mail-originated donor intent into FRU-processed digital donations, while protecting legacy offline revenue.
 - **Strategic role:** Expansion into new demand surface + monetization/yield optimization.
 - **Core thesis:** Enterprise nonprofits already run cost-effective offline payment operations; FRU should not replace those rails, but should become the orchestration and migration layer that converts offline intent into digital lifetime value.
-- **Expected impact & ROI:** Revenue impact is conversion-led only (no ingestion monetization). Payback target is 12 months per flagship account at 2.9% effective take rate; viability depends on known-contact coverage and QR/PURL identity-capture performance.
+- **Expected impact & ROI:** Revenue impact is conversion-led only (no ingestion monetization). Payback target is 12 months per flagship account at 2.9% effective take rate; pilot scaling is gated by a numeric viability threshold table (not directional signals only).
 - **Decision scope:** Commit now to Vector 1 (bounded ingestion support) + Vector 2 pilot capabilities (QR/PURL generation/tracking and migration journeys). Defer any proprietary check-scanning/lockbox operations pending stronger evidence.
 
 ---
@@ -234,9 +234,10 @@ Explicitly excluded layers:
 - Ingest lockbox/caging/in-house outcomes via bulk/API pathways.
 - Normalize offline transaction and batch artifacts for reconciliation.
 - Support lightweight donor matching and receipting where identity exists.
+- Run an enrichment waterfall on unmatched records (name/address -> email/mobile append) through third-party identity providers to expand reachable base with auditable confidence scoring.
 - Provide QR/PURL generation and tracking for campaign migration journeys.
 - Route mail-origin traffic into optimized FRU checkout flows.
-- Capture email at checkout and enable recurring conversion motions.
+- Capture email at checkout and run recurring-upgrade prompts as a default optimization path.
 - Maintain partner-compatible controls telemetry and auditability.
 
 ### 9.2 Out of Scope (Explicit Non-Goals)
@@ -252,6 +253,8 @@ Explicitly excluded layers:
 
 - Ingestion/orchestration support is not monetized directly.
 - Revenue starts only when donors complete FRU-powered digital checkout.
+- Vector 1 must include identity enrichment to raise effective reachable base (`p_known_eff`) before Vector 2 spend is scaled.
+- Vector 2 monetization assumes recurring-upgrade optimization is active in checkout and post-checkout lifecycle.
 - Major-donor and non-convertible segments keep protected pathways.
 - Partner compatibility with banks/lockbox/in-house controls is required.
 - All scale decisions are pilot-gated by measured conversion and protection metrics.
@@ -280,7 +283,8 @@ Explicitly excluded layers:
 | Phase | Scope focus | Feasibility check | Desirability signal | Viability signal | Stop / Pause condition |
 | --- | --- | --- | --- | --- | --- |
 | Phase 0 | Baseline instrumentation on flagship account | Can ingest offline outcomes with reconciliation parity | Ops teams accept workflow fit | Baseline metrics captured | Ingestion breaks controls or data quality |
-| Phase 1 | Vector 1 bounded rollout | Match rate and time-to-post improve or hold | Low operational friction for gift processing teams | No material offline revenue disruption | Elevated exception/rework burden |
+| Phase 1A | Vector 1 ingestion rollout | Match rate and time-to-post improve or hold | Low operational friction for gift processing teams | No material offline revenue disruption | Elevated exception/rework burden |
+| Phase 1B | Vector 1 enrichment rollout | Enrichment append pipeline is compliant and stable | Teams accept enrichment-assisted receipting/matching | `p_known_eff` reaches minimum viable threshold | Enrichment lift too low or data-quality risk too high |
 | Phase 2 | Vector 2 pilot (QR/PURL + campaign checkout) | End-to-end attribution and identity capture work | Donors engage QR/PURL journeys | Conversion-led contribution trend supports 12-month payback path | Conversion too low vs model threshold |
 | Phase 3 | Controlled scale by archetype | Repeatability across 3-5 archetypes | Positive stakeholder adoption | Base-case payback <= 12 months per flagship account | Payback slips beyond threshold |
 
@@ -294,6 +298,7 @@ Explicitly excluded layers:
 | --- | --- | --- |
 | Inbound adapters for lockbox/caging/in-house files | Tech/Data | No credible continuity layer |
 | CRM/finance reconciliation mapping | Data/Ops | Data trust breaks; adoption stalls |
+| Identity enrichment partner(s) and policy-approved matching rules (e.g., Experian/LiveRamp-class) | Data/Legal/Ops | Reachable base remains too low for ROI |
 | QR/PURL generation + campaign workflow support | Tech/Ops | No scalable migration path |
 | Gift-processing control compatibility (maker-checker, audit artifacts) | Ops/Legal | Enterprise rejection risk |
 | Account-level pilot sponsorship | Ops/GTM | Cannot validate economics |
@@ -303,7 +308,7 @@ Explicitly excluded layers:
 | Risk | Impact | Likelihood | Mitigation | Kill / Pause trigger |
 | --- | --- | --- | --- | --- |
 | Forced migration harms older donor retention | High | Med | Segment-based migration; preserve check path | Material revenue drop in protected cohorts |
-| Low known-contact coverage | High | High | Explicitly model `p_known`; run QR/PURL acquisition path | Identity capture remains below viable threshold |
+| Low known-contact coverage | High | High | Run enrichment waterfall to lift `p_known_eff`; pair with QR/PURL acquisition path | `p_known_eff` remains below viable threshold |
 | Weak QR/PURL response | High | Med | Campaign experimentation and placement standards | Cannot reach conversion required for 12-month payback |
 | Enterprise process mismatch | High | Med | Fit to in-house and outsourced workflows; controls-first rollout | Persistent control exceptions/audit concerns |
 | Overstated ROI assumptions | High | Med | Conservative/base/aggressive scenarios; pilot-calibrated inputs | Base-case payback > 12 months |
@@ -318,7 +323,7 @@ Explicitly excluded layers:
 
 ### 15.2 Realization Path
 
-- Capability -> better identity continuity + campaign routing -> more online completions and recurring attach -> FRU revenue via 2.9% take rate on converted digital volume.
+- Capability -> ingestion + enrichment raise reachable base -> QR/PURL and outreach drive digital checkout -> recurring-upgrade prompts increase donation frequency -> FRU revenue via 2.9% take rate on converted digital volume.
 - Nonprofit value realization includes faster stewardship loops and reduced reconciliation friction, improving adoption probability.
 
 ### 15.3 Sensitivity Drivers
@@ -329,6 +334,30 @@ Explicitly excluded layers:
 - bounded Vector 1 implementation cost,
 - stability of offline protected revenue.
 
+### 15.4 Viability Threshold Table (Board Gate)
+
+| Metric | Minimum viable | Target | Kill threshold |
+| --- | ---: | ---: | ---: |
+| `p_known` (known-contact share) | `>= 35%` | `>= 45%` | `< 25%` |
+| `p_enrich_match` (new reachable from enrichment on unknown base) | `>= 12%` | `>= 20%` | `< 8%` |
+| `p_visit_qr` (QR/PURL visit from unknown base) | `>= 6%` | `>= 10%` | `< 3%` |
+| `p_id_capture_qr` (identity captured on QR/PURL journey) | `>= 55%` | `>= 70%` | `< 40%` |
+| `p_checkout_known` | `>= 55%` | `>= 65%` | `< 45%` |
+| `p_checkout_qr` | `>= 45%` | `>= 60%` | `< 35%` |
+| `p_stick_blended` (post-conversion stickiness) | `>= 60%` | `>= 70%` | `< 50%` |
+| `p_recur_attach` (recurring attach from converted donors) | `>= 20%` | `>= 30%` | `< 12%` |
+| `p_convert_blended` (offline base converted online) | `>= 5.0%` | `>= 8.0%` | `< 3.5%` |
+| Base-case payback | `<= 12 months` | `<= 9 months` | `> 18 months` |
+
+Example check from review:
+- Given `p_known=40%`, `p_visit_qr=8%`, `p_checkout=60%`, viability is not determined by these 3 values alone.
+- Using conservative companion assumptions (`p_enrich_match=12%`, `p_engage_known=25%`, `p_id_capture_qr=60%`, `p_stick_known=70%`, `p_stick_qr=65%`), estimated `p_convert_blended ≈ 6.1%`.
+- Interpretation: borderline viable. It becomes clearly viable only if enrichment lift and recurring attach meet minimum thresholds and account-level 12-month payback still clears after full costs.
+
+### 15.5 Failure Mode Narrative
+
+If `p_convert_blended` stays below `5.0%` across two pilot waves, this initiative should be treated as a defensive enterprise-enablement capability (ingestion/continuity) rather than a growth engine, and scale investment should pause.
+
 ---
 
 ## 16. Investment, Effort & ROI
@@ -337,12 +366,20 @@ Explicitly excluded layers:
 
 | Team | Scope | Est. MM | Est. Cost |
 | --- | --- | --- | --- |
-| Product + Engineering | Vector 1 ingestion adapters, normalization, reconciliation primitives | 6-10 | TBD by staffing plan |
-| Product + Engineering | Vector 2 QR/PURL generation, tracking, campaign routing, funnel analytics | 8-14 | TBD by staffing plan |
-| Data/Analytics | Instrumentation and pilot measurement framework | 2-4 | TBD |
-| Security/Compliance | Controls and audit compatibility hardening | 1-3 | TBD |
+| Product + Engineering | Vector 1 core (ingestion adapters, normalization, reconciliation primitives) | 4-6 | TBD by staffing plan |
+| Product + Engineering + Data | Vector 1B enrichment layer (provider connectors, matching confidence, suppression/consent controls) | 2-3 | TBD by staffing plan |
+| Product + Engineering | Phase 2 MVP only (QR/PURL generation, campaign routing, baseline funnel telemetry) | 3-5 | TBD by staffing plan |
+| Product + Engineering | Phase 2 scale pack (advanced experimentation/automation), conditional after gate | 5-9 | Deferred until pilot gates pass |
+| Data/Analytics | Pilot instrumentation and threshold tracking | 1-2 | TBD |
+| Security/Compliance | Controls and audit compatibility hardening | 1-2 | TBD |
 
-**Total:** Modeled as `C_build = C_v1_build + C_v2_build` in ROI model.
+**Total:** Modeled as `C_build = C_v1_build + C_v1b_build + C_v2_build` in ROI model.
+
+Phase 2 MVP containment (explicit):
+- No broad automation suite before pilot proof.
+- No expansion to non-flagship segments before threshold pass.
+- No additional scale-pack investment unless base-case payback remains `<= 12 months`.
+- No Phase 2 scale spend unless recurring-upgrade metrics (`p_recur_attach`) clear minimum viable threshold.
 
 ### GTM / Operational Effort (Post-Launch)
 

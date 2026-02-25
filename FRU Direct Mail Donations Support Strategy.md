@@ -53,6 +53,7 @@ Goal: Preserve offline revenue without operational disruption.
 - Ingest lockbox/in-house outcomes via bulk upload/API pathways.
 - Normalize data and support reconciliation.
 - Perform lightweight donor matching where identifiers exist.
+- Run enrichment waterfall on unmatched donor records (name/address -> email/mobile) to expand reachable base with policy controls.
 - Enable electronic receipting when possible.
 - Maintain compliance-grade traceability.
 
@@ -64,7 +65,7 @@ Economic role:
 
 Explicit boundary:
 
-If donor email is missing and no QR/PURL journey is used, orchestration stops at posting and receipting; no digital lift is created.
+If donor email remains missing after enrichment and no QR/PURL journey is used, orchestration stops at posting and receipting; no digital lift is created.
 
 ---
 
@@ -77,7 +78,7 @@ Goal: Convert reachable offline donors to digital recurring pathways.
 - For participating campaigns, every outbound direct-mail pack should include QR and/or personalized URL on envelope and insert/letter.
 - Mobile-first optimized checkouts.
 - Mandatory email capture at digital touchpoints.
-- Recurring attach where appropriate.
+- ML-assisted recurring-upgrade prompts as a default optimization path.
 - Lifecycle stewardship through digital channels.
 
 Economic role:
