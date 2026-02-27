@@ -122,9 +122,12 @@
       color: #1a3a31;
       padding: 7px 12px;
       border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
       font: inherit;
       font-size: 0.85rem;
       font-weight: 600;
+      text-decoration: none;
       cursor: pointer;
     }
 
@@ -566,8 +569,8 @@
     </header>
 
     <div class="view-switch" aria-label="Dashboard view switch">
-      <button class="view-btn active" type="button" data-view-target="customer">NPO-Facing Story & ROI</button>
-      <button class="view-btn" type="button" data-view-target="internal">Internal Strategy Decision</button>
+      <a class="view-btn active" href="#customer" data-view-target="customer">NPO-Facing Story & ROI</a>
+      <a class="view-btn" href="#internal" data-view-target="internal">Internal Strategy Decision</a>
     </div>
 
     <section class="section" data-view="customer">
@@ -603,13 +606,6 @@
           <div id="tamMetric" class="metric">$592.5B</div>
           <p class="muted">Upper bound from Giving USA 2025. This is total giving, not direct-mail/check only.</p>
         </article>
-
-        <article class="card">
-          <h3>Metric Boundary<span class="e-tag primary">Primary</span></h3>
-          <p class="muted">Do not compare FRPS check-payment counts directly to donation-dollar estimates.</p>
-          <p class="small">FRPS shows transaction counts across all sectors; this estimator works in USD value assumptions for nonprofit planning.</p>
-        </article>
-
       </div>
 
       <div class="grid cols-2">
@@ -743,20 +739,6 @@
           <p class="small">4) It does not erode protected offline revenue segments (including major donors).</p>
         </article>
       </div>
-      <article class="card" style="margin-top: 14px;">
-        <h3>Viability Narrative (Unit Economics for NPOs)<span class="e-tag primary">Primary</span></h3>
-        <p class="small"><strong>Condition for viability:</strong> migration is viable only when NPO net proceeds in hybrid exceed baseline net proceeds after commission.</p>
-        <p class="small"><strong>Break-even condition (per reached donor):</strong></p>
-        <p class="small"><code>conv_hybrid * [s_off * (avg_off - c_off) + s_on * avg_on * (1 - r)] - mail_hybrid &gt; conv_base * (avg_base - c_off) - mail_base</code></p>
-        <p class="small">where <code>r</code> is FRU effective commission rate (default 2.9%).</p>
-        <p class="small"><strong>In plain terms:</strong> hybrid is worth doing only if the net dollars generated per mailed donor are higher than baseline. Compute expected net in hybrid (offline net + online net after commission, minus mailing cost) and compare it to baseline net (offline net minus mailing cost). If hybrid is higher, the switch is financially viable for the nonprofit.</p>
-        <p class="small"><strong>Execution plan:</strong></p>
-        <p class="small">1) Use this condition to define account-level break-even in the ROI model.</p>
-        <p class="small">2) Run pilot cohorts to validate actual conversion uplift and online share shift.</p>
-        <p class="small">3) Build ingestion for current rails as support and data-enrichment foundation; scale migration only where pilots clear the break-even line.</p>
-        <p class="small"><strong>Where to evaluate it:</strong> switch to <em>NPO-Facing Story &amp; ROI</em> and use <em>Economics of Switching Check Donors to Online Giving</em> for scenario calculations.</p>
-        <p class="small">Derived from internal concept and interview research; GPV client baselines can be layered in later.</p>
-      </article>
     </section>
 
     <section class="section" data-view="customer">
@@ -1028,7 +1010,6 @@
           <p><a href="https://www.federalreserve.gov/newsevents/pressreleases/other20131219a.htm" target="_blank" rel="noopener noreferrer">Federal Reserve 2013 payments study</a></p>
           <p><a href="https://www.federalreserve.gov/newsevents/pressreleases/other20161222a.htm" target="_blank" rel="noopener noreferrer">Federal Reserve 2016 payments study</a></p>
           <p><a href="https://www.federalreserve.gov/newsevents/pressreleases/other20230421a.htm" target="_blank" rel="noopener noreferrer">Federal Reserve payments study (2023 release, 2021 data)</a></p>
-          <p><a href="https://www.nextafter.com/the-generosity-report/online-giving-trends/" target="_blank" rel="noopener noreferrer">Blackbaud online trend compilation</a></p>
         </div>
       </article>
     </section>
@@ -1205,6 +1186,11 @@
       const sections = Array.from(document.querySelectorAll("[data-view]"));
       if (!buttons.length || !sections.length) return;
 
+      function viewFromHash() {
+        const view = window.location.hash.replace(/^#/, "");
+        return view === "internal" || view === "customer" ? view : null;
+      }
+
       function apply(view) {
         buttons.forEach((btn) => btn.classList.toggle("active", btn.dataset.viewTarget === view));
         sections.forEach((section) => {
@@ -1213,10 +1199,24 @@
       }
 
       buttons.forEach((btn) => {
-        btn.addEventListener("click", () => apply(btn.dataset.viewTarget));
+        btn.addEventListener("click", (event) => {
+          event.preventDefault();
+          const targetView = btn.dataset.viewTarget;
+          if (!targetView) return;
+          if (window.location.hash !== `#${targetView}`) {
+            window.location.hash = targetView;
+          }
+          apply(targetView);
+        });
       });
 
-      apply("customer");
+      window.addEventListener("hashchange", () => {
+        const hashView = viewFromHash();
+        if (!hashView) return;
+        apply(hashView);
+      });
+
+      apply(viewFromHash() || "customer");
     }
 
     function initCalculator() {
