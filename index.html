@@ -632,33 +632,34 @@
       <div class="grid cols-2">
         <article class="card letter-body">
           <h3>Sample Message to Mail Donors</h3>
-          <p>Dear [Donor Name],</p>
+          <p id="donorGreeting">Dear [Donor Name],</p>
           <p>Thank you for standing with our mission. Your generosity powers the work families and communities rely on every day.</p>
           <p>We are adding a simple online giving option so your gift can be processed faster and with fewer manual steps, while keeping your support secure and documented.</p>
           <p><strong>Why this helps the mission:</strong></p>
           <ul class="letter-list">
             <li>Faster gift processing so funds reach programs sooner.</li>
             <li>Secure checkout with less risk of data handling errors.</li>
+            <li>You can still donate securely using bank account details instead of writing a check, and credit cards are also available.</li>
             <li>No missed or delayed checks in transit.</li>
             <li>Lower exposure to fraud and scam attempts tied to paper mail flow.</li>
             <li>Instant electronic receipt for your records.</li>
             <li>Less paper used now and in follow-up communications.</li>
           </ul>
-          <p>You can still give by mail, but if online is easier for you, please use the QR code in this letter.</p>
-          <p>With gratitude,<br />[Organization Name]</p>
+          <p>You can still give by mail, but if online is easier for you, please use the QR code in this letter. It opens a prefilled checkout to reduce steps.</p>
+          <p>With gratitude,<br />Relif Operations International</p>
         </article>
         <article class="card qr-panel">
-          <h3>Scan to Give</h3>
-          <p class="small">Use your phone camera to open the donation form.</p>
-          <a href="https://ropsi.org/?form=DonateNow" target="_blank" rel="noopener noreferrer">
+          <h3>Scan to Give (Prefilled)</h3>
+          <p class="small">This QR uses the exact personalized URL.</p>
+          <a href="https://ropsi.org/?form=FUNCPJTZZQR&amp;firstName=Alex&amp;lastName=Garcia&amp;email=alex.garcia@example.com&amp;amount=100&amp;currency=USD&amp;recurring=once&amp;designationId=EHHJ9R36&amp;tributeHonoree=Mom and Dad" target="_blank" rel="noopener noreferrer">
             <img
               class="qr-code"
-              src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=https%3A%2F%2Fropsi.org%2F%3Fform%3DDonateNow"
-              alt="QR code linking to https://ropsi.org/?form=DonateNow"
+              src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&amp;data=https%3A%2F%2Fropsi.org%2F%3Fform%3DFUNCPJTZZQR%26firstName%3DAlex%26lastName%3DGarcia%26email%3Dalex.garcia%40example.com%26amount%3D100%26currency%3DUSD%26recurring%3Donce%26designationId%3DEHHJ9R36%26tributeHonoree%3DMom%20and%20Dad"
+              alt="QR code linking to a prefilled checkout on ropsi.org"
             />
           </a>
           <p class="small" style="margin-top: 10px;">
-            Direct link: <a href="https://ropsi.org/?form=DonateNow" target="_blank" rel="noopener noreferrer">ropsi.org/?form=DonateNow</a>
+            <a href="https://ropsi.org/?form=FUNCPJTZZQR&amp;firstName=Alex&amp;lastName=Garcia&amp;email=alex.garcia@example.com&amp;amount=100&amp;currency=USD&amp;recurring=once&amp;designationId=EHHJ9R36&amp;tributeHonoree=Mom and Dad" target="_blank" rel="noopener noreferrer">Link</a>
           </p>
         </article>
       </div>
@@ -1285,6 +1286,23 @@
       apply(viewFromHash() || "customer");
     }
 
+    function initLetterGreeting() {
+      const greeting = document.getElementById("donorGreeting");
+      const link = document.querySelector('section[data-view="letter"] .qr-panel a[href*="firstName="]');
+      if (!greeting || !link) return;
+
+      try {
+        const checkoutUrl = new URL(link.href);
+        const firstName = (checkoutUrl.searchParams.get("firstName") || "").trim();
+        const lastName = (checkoutUrl.searchParams.get("lastName") || "").trim();
+        const donorName = [firstName, lastName].filter(Boolean).join(" ");
+        if (!donorName) return;
+        greeting.textContent = `Dear ${donorName},`;
+      } catch (error) {
+        // Keep fallback greeting if URL parsing fails.
+      }
+    }
+
     function initCalculator() {
       const els = Object.fromEntries(calcInputIds.map((id) => [id, document.getElementById(id)]));
 
@@ -1469,6 +1487,7 @@
       initGenerationSection();
       initCalculator();
       initViewToggle();
+      initLetterGreeting();
     }
 
     initDashboard();
