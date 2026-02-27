@@ -1393,11 +1393,15 @@
       document.getElementById("checkDeclineNote").textContent = `2000 to 2021 number of check payments (${decline.toFixed(1)}% change), showing long-term decline in check behavior.`;
     }
 
-    initStaticMetrics();
-    initMarketEstimator();
-    initGenerationSection();
-    initCalculator();
-    initViewToggle();
+    function initDashboard() {
+      initStaticMetrics();
+      initMarketEstimator();
+      initGenerationSection();
+      initCalculator();
+      initViewToggle();
+    }
+
+    initDashboard();
   </script>
 </body>
 </html>
