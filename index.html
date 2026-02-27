@@ -550,6 +550,35 @@
       margin: 4px 0;
     }
 
+    .letter-body p {
+      margin: 0 0 10px;
+    }
+
+    .letter-list {
+      margin: 8px 0 0 18px;
+      padding: 0;
+      color: #2b463d;
+      font-size: 0.92rem;
+    }
+
+    .letter-list li {
+      margin-bottom: 6px;
+    }
+
+    .qr-panel {
+      text-align: center;
+    }
+
+    .qr-code {
+      width: min(260px, 100%);
+      height: auto;
+      border: 1px solid #d7e2dc;
+      border-radius: 14px;
+      background: #ffffff;
+      padding: 10px;
+      box-shadow: 0 6px 18px rgba(16, 34, 26, 0.08);
+    }
+
     @media (max-width: 980px) {
       .grid.cols-3, .grid.cols-2, .kpi-grid, .calc-layout, .input-grid, .scenario-grid, .scenario-input-grid { grid-template-columns: 1fr; }
       .sources { columns: 1; }
@@ -569,6 +598,7 @@
 
     <div class="view-switch" aria-label="Dashboard view switch">
       <a class="view-btn active" href="#customer" data-view-target="customer">NPO-Facing Story & ROI</a>
+      <a class="view-btn" href="#letter" data-view-target="letter">Donor Letter Example</a>
       <a class="view-btn" href="#internal" data-view-target="internal">Internal Strategy Decision</a>
     </div>
 
@@ -595,6 +625,43 @@
         </div>
         <p class="muted">PayPal + GuideStar 2016 survey split. Useful as historical context only.</p>
       </article>
+    </section>
+
+    <section class="section" data-view="letter">
+      <h2>Donor Letter Example</h2>
+      <div class="grid cols-2">
+        <article class="card letter-body">
+          <h3>Sample Message to Mail Donors</h3>
+          <p>Dear [Donor Name],</p>
+          <p>Thank you for standing with our mission. Your generosity powers the work families and communities rely on every day.</p>
+          <p>We are adding a simple online giving option so your gift can be processed faster and with fewer manual steps, while keeping your support secure and documented.</p>
+          <p><strong>Why this helps the mission:</strong></p>
+          <ul class="letter-list">
+            <li>Faster gift processing so funds reach programs sooner.</li>
+            <li>Secure checkout with less risk of data handling errors.</li>
+            <li>No missed or delayed checks in transit.</li>
+            <li>Lower exposure to fraud and scam attempts tied to paper mail flow.</li>
+            <li>Instant electronic receipt for your records.</li>
+            <li>Less paper used now and in follow-up communications.</li>
+          </ul>
+          <p>You can still give by mail, but if online is easier for you, please use the QR code in this letter.</p>
+          <p>With gratitude,<br />[Organization Name]</p>
+        </article>
+        <article class="card qr-panel">
+          <h3>Scan to Give</h3>
+          <p class="small">Use your phone camera to open the donation form.</p>
+          <a href="https://ropsi.org/?form=DonateNow" target="_blank" rel="noopener noreferrer">
+            <img
+              class="qr-code"
+              src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=https%3A%2F%2Fropsi.org%2F%3Fform%3DDonateNow"
+              alt="QR code linking to https://ropsi.org/?form=DonateNow"
+            />
+          </a>
+          <p class="small" style="margin-top: 10px;">
+            Direct link: <a href="https://ropsi.org/?form=DonateNow" target="_blank" rel="noopener noreferrer">ropsi.org/?form=DonateNow</a>
+          </p>
+        </article>
+      </div>
     </section>
 
     <section class="section" data-view="internal">
@@ -1187,7 +1254,7 @@
 
       function viewFromHash() {
         const view = window.location.hash.replace(/^#/, "");
-        return view === "internal" || view === "customer" ? view : null;
+        return view === "internal" || view === "customer" || view === "letter" ? view : null;
       }
 
       function apply(view) {
