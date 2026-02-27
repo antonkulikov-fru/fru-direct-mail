@@ -566,8 +566,8 @@
     </header>
 
     <div class="view-switch" aria-label="Dashboard view switch">
-      <button class="view-btn active" type="button" data-view-target="internal">Internal Strategy Decision</button>
-      <button class="view-btn" type="button" data-view-target="customer">NPO-Facing Story & ROI</button>
+      <button class="view-btn active" type="button" data-view-target="customer">NPO-Facing Story & ROI</button>
+      <button class="view-btn" type="button" data-view-target="internal">Internal Strategy Decision</button>
     </div>
 
     <section class="section" data-view="customer">
@@ -1216,7 +1216,7 @@
         btn.addEventListener("click", () => apply(btn.dataset.viewTarget));
       });
 
-      apply("internal");
+      apply("customer");
     }
 
     function initCalculator() {
