@@ -570,6 +570,31 @@
       <button class="view-btn" type="button" data-view-target="customer">NPO-Facing Story & ROI</button>
     </div>
 
+    <section class="section" data-view="customer">
+      <h2>U.S. Check Payments (all uses, count)</h2>
+      <article class="card">
+        <div class="metric" id="checkDeclineMetric">40.9B payments → 14.5B payments</div>
+        <p class="muted" id="checkDeclineNote">2000 to 2021 number of check payments, showing long-term decline in check behavior.</p>
+        <p class="small">Source: <a href="https://www.federalreserve.gov/newsevents/pressreleases/other20230421a.htm" target="_blank" rel="noopener noreferrer">Federal Reserve Payments Study (2023 release, 2021 data)</a></p>
+      </article>
+    </section>
+
+    <section class="section" data-view="customer">
+      <h2>Historical Benchmark Panel</h2>
+      <article class="card">
+        <div class="split-2016">
+          <div class="donut-2016" aria-label="2016 donation split: Check 44%, Card 22%, Digital wallet 21%, Cash 13%"></div>
+          <div class="split-legend">
+            <div class="item"><span class="swatch check"></span><span>Check</span><strong>44%</strong></div>
+            <div class="item"><span class="swatch card-method"></span><span>Card</span><strong>22%</strong></div>
+            <div class="item"><span class="swatch wallet"></span><span>Digital wallet</span><strong>21%</strong></div>
+            <div class="item"><span class="swatch cash"></span><span>Cash</span><strong>13%</strong></div>
+          </div>
+        </div>
+        <p class="muted">PayPal + GuideStar 2016 survey split. Useful as historical context only.</p>
+      </article>
+    </section>
+
     <section class="section" data-view="internal">
       <h2>Market Estimations</h2>
       <div class="grid cols-2">
@@ -750,27 +775,6 @@
           <p class="small">Comparable preference metrics are shown for Boomers/Gen X/Millennials only; Matures and Gen Z are shown as not-comparable in this source set.</p>
         </article>
       </div>
-
-      <article class="card" style="margin-top: 14px;">
-        <h3>U.S. Check Payments (all uses, count)<span class="e-tag primary">Primary</span></h3>
-        <div class="metric" id="checkDeclineMetric">40.9B payments → 14.5B payments</div>
-        <p class="muted" id="checkDeclineNote">2000 to 2021 number of check payments, showing long-term decline in check behavior.</p>
-        <p class="small">Source: <a href="https://www.federalreserve.gov/newsevents/pressreleases/other20230421a.htm" target="_blank" rel="noopener noreferrer">Federal Reserve Payments Study (2023 release, 2021 data)</a></p>
-      </article>
-
-      <article class="card" style="margin-top: 14px;">
-        <h3>Historical Benchmark Panel<span class="e-tag historical">Historical</span></h3>
-        <div class="split-2016">
-          <div class="donut-2016" aria-label="2016 donation split: Check 44%, Card 22%, Digital wallet 21%, Cash 13%"></div>
-          <div class="split-legend">
-            <div class="item"><span class="swatch check"></span><span>Check</span><strong>44%</strong></div>
-            <div class="item"><span class="swatch card-method"></span><span>Card</span><strong>22%</strong></div>
-            <div class="item"><span class="swatch wallet"></span><span>Digital wallet</span><strong>21%</strong></div>
-            <div class="item"><span class="swatch cash"></span><span>Cash</span><strong>13%</strong></div>
-          </div>
-        </div>
-        <p class="muted">PayPal + GuideStar 2016 survey split. Useful as historical context only.</p>
-      </article>
 
       <article class="card" style="margin-top: 14px;">
         <h3>Generation Profile<span class="e-tag secondary">Secondary</span></h3>
