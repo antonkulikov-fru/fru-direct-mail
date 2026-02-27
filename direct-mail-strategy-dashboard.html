@@ -1,0 +1,1403 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Direct Mail Economics Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4f6f4;
+      --ink: #10221a;
+      --muted: #4f6259;
+      --card: #ffffff;
+      --accent: #0f766e;
+      --accent-2: #d97706;
+      --ok: #166534;
+      --warn: #b45309;
+      --bad: #b91c1c;
+      --line: #d6dfda;
+      --shadow: 0 8px 30px rgba(16, 34, 26, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 5% 10%, rgba(15, 118, 110, 0.16), transparent 34%),
+        radial-gradient(circle at 95% 18%, rgba(217, 119, 6, 0.13), transparent 30%),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.4;
+    }
+
+    .wrap {
+      width: min(1200px, 92vw);
+      margin: 0 auto;
+      padding: 30px 0 60px;
+    }
+
+    .hero {
+      background: linear-gradient(115deg, #0e2e2c, #173f3a 52%, #2d4f46);
+      color: #f4fff9;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -60px -70px auto;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(255, 222, 173, 0.35), transparent 65%);
+      pointer-events: none;
+    }
+
+    h1, h2, h3 { font-family: "Space Grotesk", "IBM Plex Sans", sans-serif; margin: 0; }
+
+    h1 { font-size: clamp(1.7rem, 2.6vw, 2.5rem); margin-bottom: 8px; }
+    h2 { font-size: clamp(1.3rem, 2vw, 1.8rem); margin-bottom: 14px; }
+    h3 { font-size: 1rem; margin-bottom: 10px; color: #183126; }
+
+    .hero p { margin: 0; color: #ddf6ea; max-width: 900px; }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      animation: rise 520ms ease both;
+    }
+
+    .card:nth-child(2) { animation-delay: 70ms; }
+    .card:nth-child(3) { animation-delay: 110ms; }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .metric {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(1.4rem, 2.2vw, 2rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin: 2px 0 6px;
+      color: #0f332f;
+    }
+
+    .muted { color: var(--muted); font-size: 0.92rem; }
+
+    .section { margin-top: 24px; }
+
+    .view-switch {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .view-btn {
+      border: 1px solid #b8cbc2;
+      background: #f4fbf7;
+      color: #1a3a31;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .view-btn.active {
+      background: #0f766e;
+      border-color: #0f766e;
+      color: #effff9;
+    }
+
+    .e-tag {
+      display: inline-block;
+      margin-left: 7px;
+      padding: 1px 7px;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      border: 1px solid;
+      vertical-align: middle;
+    }
+
+    .e-tag.primary { color: #0f5132; background: #eaf8ee; border-color: #b3dec1; }
+    .e-tag.secondary { color: #7a4d00; background: #fff6dd; border-color: #f0d9a0; }
+    .e-tag.historical { color: #4b3f72; background: #f2ecff; border-color: #d8c8ff; }
+    .e-tag.assumption { color: #234b6e; background: #eaf4ff; border-color: #bcd7f4; }
+
+    .controls {
+      display: grid;
+      gap: 10px;
+    }
+
+    label {
+      font-size: 0.86rem;
+      color: #234237;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .label-with-hint {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .label-with-hint label {
+      margin-bottom: 0;
+    }
+
+    details.hint {
+      position: relative;
+      display: inline-block;
+    }
+
+    details.hint summary {
+      list-style: none;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #2f5e52;
+      border: 1px solid #b6cec4;
+      border-radius: 999px;
+      width: 22px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      cursor: pointer;
+      user-select: none;
+      background: #eef7f2;
+    }
+
+    details.hint summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .hint-pop {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      left: auto;
+      width: min(300px, 70vw);
+      z-index: 20;
+      background: #133a35;
+      color: #ebfff7;
+      border: 1px solid #2e5a4d;
+      border-radius: 10px;
+      padding: 9px 10px;
+      font-size: 0.77rem;
+      line-height: 1.35;
+      box-shadow: 0 8px 24px rgba(14, 41, 33, 0.22);
+    }
+
+    .scenario-input-grid,
+    .card {
+      overflow: visible;
+    }
+
+    .hyb-uplift-cell {
+      display: flex;
+      align-items: center;
+    }
+
+    .hyb-uplift-cell .small {
+      white-space: nowrap;
+      font-size: 0.92rem;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      border: 1px solid #bfd1c8;
+      border-radius: 10px;
+      padding: 10px 11px;
+      font: inherit;
+      background: #f7fbf8;
+      color: #112720;
+    }
+
+    input[type="number"]:disabled {
+      background: #eef3f0;
+      color: #466056;
+      border-color: #ccd9d3;
+      cursor: not-allowed;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .range-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.79rem;
+      font-weight: 700;
+      border: 1px solid;
+    }
+
+    .pill.ok { color: var(--ok); background: #eaf8ee; border-color: #b2dfbe; }
+    .pill.warn { color: var(--warn); background: #fff5df; border-color: #f7dba0; }
+    .pill.bad { color: var(--bad); background: #ffebea; border-color: #f3b7b3; }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 145px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.87rem;
+    }
+
+    .bar-track {
+      background: #edf4f0;
+      border-radius: 999px;
+      overflow: hidden;
+      height: 12px;
+      border: 1px solid #d8e3dd;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #0ea5a0);
+      width: 0;
+      transition: width 340ms ease;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 8px;
+      border-bottom: 1px solid #e1e8e4;
+      vertical-align: top;
+    }
+
+    th {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #416155;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .kpi {
+      border: 1px solid #d8e4de;
+      border-radius: 12px;
+      padding: 10px;
+      background: #fbfefc;
+    }
+
+    .kpi .name { font-size: 0.78rem; color: #4c6258; text-transform: uppercase; letter-spacing: 0.04em; }
+    .kpi .value { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 1.2rem; margin-top: 4px; }
+
+    .split-2016 {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .donut-2016 {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: conic-gradient(
+        #153f96 0 44%,
+        #66addb 44% 66%,
+        #2596d2 66% 87%,
+        #a8c8dd 87% 100%
+      );
+      position: relative;
+      margin: 2px auto;
+      border: 1px solid #c4d6df;
+    }
+
+    .donut-2016::after {
+      content: "2016";
+      position: absolute;
+      inset: 30px;
+      border-radius: 50%;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+      color: #234237;
+      font-size: 1.05rem;
+      border: 1px solid #dbe7e1;
+    }
+
+    .split-legend {
+      display: grid;
+      gap: 6px;
+      font-size: 0.87rem;
+    }
+
+    .split-legend .item {
+      display: grid;
+      grid-template-columns: 10px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      border-bottom: 1px dashed #e1e8e4;
+      padding: 2px 0 4px;
+    }
+
+    .split-legend .item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+
+    .swatch.check { background: #153f96; }
+    .swatch.card-method { background: #66addb; }
+    .swatch.wallet { background: #2596d2; }
+    .swatch.cash { background: #a8c8dd; }
+
+    .calc-layout {
+      display: grid;
+      grid-template-columns: 1.05fr 1.2fr;
+      gap: 14px;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .group-title {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #345246;
+      margin-top: 5px;
+      margin-bottom: 2px;
+      grid-column: 1 / -1;
+      padding-top: 4px;
+      border-top: 1px dashed #c9d7d1;
+    }
+
+    .summary-box {
+      border: 1px solid #cfddd6;
+      background: #f7fcf9;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .summary-box.dedicated-row {
+      margin-top: 14px;
+    }
+
+    .decision {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.2rem;
+      margin: 3px 0 8px;
+    }
+
+    .small { font-size: 0.8rem; color: #50665c; }
+
+    .sources {
+      columns: 2;
+      gap: 22px;
+      font-size: 0.86rem;
+    }
+
+    .sources a { color: #0d5f58; }
+
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .scenario-card {
+      border: 1px solid #d8e4de;
+      border-radius: 12px;
+      background: #fbfefc;
+      padding: 10px;
+    }
+
+    .scenario-card.full-row {
+      grid-column: 1 / -1;
+    }
+
+    .scenario-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #426155;
+      margin-bottom: 8px;
+    }
+
+    .scenario-table td {
+      padding: 6px 4px;
+      border-bottom: 1px dashed #e1e8e4;
+      font-size: 0.83rem;
+    }
+
+    .scenario-table td:last-child {
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .scenario-table tr.key-row td {
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #133a35;
+    }
+
+    .scenario-table tr.key-row td:last-child {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.45rem;
+      line-height: 1.1;
+    }
+
+    .scenario-input-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .scenario-kpi {
+      margin-top: 10px;
+      border: 1px solid #d8e4de;
+      border-radius: 12px;
+      background: #fbfefc;
+      padding: 10px;
+    }
+
+    .scenario-kpi .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      border-bottom: 1px dashed #e1e8e4;
+      padding: 7px 0;
+      font-size: 0.86rem;
+    }
+
+    .scenario-kpi .row:last-child {
+      border-bottom: 0;
+    }
+
+    .scenario-kpi .row strong {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.05rem;
+      color: #0f332f;
+    }
+
+    .scenario-kpi .row.divider {
+      grid-template-columns: 1fr;
+      border-bottom: 0;
+      border-top: 1px solid #d6dfda;
+      padding: 4px 0 0;
+      margin: 4px 0;
+    }
+
+    @media (max-width: 980px) {
+      .grid.cols-3, .grid.cols-2, .kpi-grid, .calc-layout, .input-grid, .scenario-grid, .scenario-input-grid { grid-template-columns: 1fr; }
+      .sources { columns: 1; }
+      .bar-row { grid-template-columns: 120px 1fr auto; }
+      .split-2016 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>Direct Mail Strategy Dashboard</h1>
+      <p>
+        Decision support for direct-mail capital allocation: market estimations, generation-level trend signals,
+        and an interactive ROI model for switching check donors to FRU-powered online giving.
+      </p>
+    </header>
+
+    <div class="view-switch" aria-label="Dashboard view switch">
+      <button class="view-btn active" type="button" data-view-target="internal">Internal Strategy Decision</button>
+      <button class="view-btn" type="button" data-view-target="customer">NPO-Facing Story & ROI</button>
+    </div>
+
+    <section class="section" data-view="internal">
+      <h2>Market Estimations</h2>
+      <div class="grid cols-2">
+        <article class="card">
+          <h3>TAM (U.S. charitable giving, 2024)<span class="e-tag primary">Primary</span></h3>
+          <div id="tamMetric" class="metric">$592.5B</div>
+          <p class="muted">Upper bound from Giving USA 2025. This is total giving, not direct-mail/check only.</p>
+        </article>
+
+        <article class="card">
+          <h3>Metric Boundary<span class="e-tag primary">Primary</span></h3>
+          <p class="muted">Do not compare FRPS check-payment counts directly to donation-dollar estimates.</p>
+          <p class="small">FRPS shows transaction counts across all sectors; this estimator works in USD value assumptions for nonprofit planning.</p>
+        </article>
+
+      </div>
+
+      <div class="grid cols-2">
+        <article class="card">
+          <h3>Constrained TAM -> SAM -> SOM Estimator<span class="e-tag assumption">Assumption</span></h3>
+          <div class="controls">
+            <div>
+              <label for="offlineShare">Constrained addressable base (% of total giving)</label>
+              <div class="range-row">
+                <input id="offlineShare" type="range" min="5" max="60" step="1" value="28" />
+                <strong id="offlineShareOut">28%</strong>
+              </div>
+            </div>
+            <div>
+              <label for="serviceableFit">SAM fit within offline surface (%)</label>
+              <div class="range-row">
+                <input id="serviceableFit" type="range" min="1" max="90" step="1" value="10" />
+                <strong id="serviceableFitOut">10%</strong>
+              </div>
+            </div>
+            <div>
+              <label for="obtainable24">SOM in 24 months (% of SAM)</label>
+              <div class="range-row">
+                <input id="obtainable24" type="range" min="1" max="30" step="1" value="6" />
+                <strong id="obtainable24Out">6%</strong>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3>Directional Output<span class="e-tag assumption">Assumption</span></h3>
+          <div class="kpi-grid">
+            <div class="kpi">
+              <div class="name">Constrained addressable base (USD)</div>
+              <div class="value" id="surfaceValue">$165.9B</div>
+            </div>
+            <div class="kpi">
+              <div class="name">Estimated SAM</div>
+              <div class="value" id="samValue">$66.4B</div>
+            </div>
+            <div class="kpi">
+              <div class="name">Estimated SOM (24m)</div>
+              <div class="value" id="somValue">$5.3B</div>
+            </div>
+          </div>
+          <p class="small" style="margin-top:10px;">
+            Planning assumptions only. Use for scenario comparison, not as audited market totals.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" data-view="internal">
+      <h2>Internal Strategy Guardrails</h2>
+      <div class="grid cols-2">
+        <article class="card">
+          <h3>Strategic Stance<span class="e-tag primary">Primary</span></h3>
+          <p class="small"><strong>Core thesis:</strong> nonprofits already run cost-effective offline processing. FRU should not replace lockbox/caging rails; FRU should orchestrate intake continuity and migrate reachable donors to digital lifetime value.</p>
+          <p class="small"><strong>Non-goals:</strong> no proprietary lockbox operations, no commodity per-check margin play, no forced migration of older/high-value cohorts.</p>
+          <p class="small"><strong>Monetization logic:</strong> ingestion support is non-monetized. Revenue starts only when donors complete FRU-powered online checkout.</p>
+        </article>
+        <article class="card">
+          <h3>Delivery Scope (Phased)<span class="e-tag assumption">Assumption</span></h3>
+          <p class="small"><strong>Vector 1:</strong> bounded ingestion + reconciliation + receipting continuity (+ optional identity enrichment for reachable-base lift).</p>
+          <p class="small"><strong>Vector 2 MVP:</strong> QR/PURL generation, attribution tracking, conversion journeys, recurring prompts.</p>
+          <p class="small"><strong>Containment:</strong> defer proprietary check-scanning stack and broad automation before pilot gates pass.</p>
+        </article>
+      </div>
+      <article class="card" style="margin-top: 14px;">
+        <h3>Demand Evidence (Client Interviews, 2025)<span class="e-tag primary">Primary</span></h3>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Org / segment</th>
+                <th>Signal type</th>
+                <th>Observed evidence</th>
+                <th>Implication for strategy</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Bible League, Daily Bread, MAZON, CRC, TGC</td>
+                <td>Channel composition</td>
+                <td>Direct-mail payments are check-heavy (typically ~90-95% checks; mailed cards are low share).</td>
+                <td>Maintain offline continuity; migration must be gradual and segment-aware.</td>
+              </tr>
+              <tr>
+                <td>Finance and gift-processing teams</td>
+                <td>Operational economics</td>
+                <td>Existing rails (RDC scanner/lockbox/internal process) are already efficient and trusted.</td>
+                <td>Avoid commodity check-processing competition as primary strategy.</td>
+              </tr>
+              <tr>
+                <td>All interviewed operating models</td>
+                <td>Control requirement</td>
+                <td>Daily batches and three-way reconciliation (bank ↔ CRM ↔ finance) are core controls.</td>
+                <td>Batch object + reconciliation visibility are table-stakes for adoption.</td>
+              </tr>
+              <tr>
+                <td>MAZON, CRC, Bible League</td>
+                <td>Product fit</td>
+                <td>VT usage exists for mailed cards; demand for compliant batching and campaign mapping is explicit.</td>
+                <td>Expand VT/API batching for card forms as operational support layer.</td>
+              </tr>
+              <tr>
+                <td>Enterprise finance stakeholders</td>
+                <td>Decision driver</td>
+                <td>Fee sensitivity is high; faster settlement helps but does not justify structurally worse economics.</td>
+                <td>Revenue case must come from conversion and recurring lift, not check spread.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small">Source: synthesized findings from <code>_inbox/Research results.md</code> interview set (Bible League, Daily Bread, MAZON/Agilis, CRC, TGC).</p>
+      </article>
+      <div class="grid cols-2" style="margin-top: 14px;">
+        <article class="card">
+          <h3>Unit-Economy Read<span class="e-tag primary">Primary</span></h3>
+          <p class="small"><strong>Base position:</strong> check-scanning alone is a low-margin utility because nonprofits already have low-cost incumbent rails.</p>
+          <p class="small"><strong>Economic engine:</strong> FRU value is conversion + recurring + data continuity, where take-rate economics apply.</p>
+          <p class="small"><strong>Conclusion (current evidence):</strong> prioritize partner-compatible ingestion plus migration journeys; treat proprietary check processing as optional, not foundational.</p>
+        </article>
+        <article class="card">
+          <h3>When Building Check Scanning Is Rational<span class="e-tag assumption">Assumption</span></h3>
+          <p class="small"><strong>Only proceed if all hold:</strong></p>
+          <p class="small">1) It unblocks flagship enterprise deals that otherwise do not close.</p>
+          <p class="small">2) It materially improves conversion/recurring outcomes versus partner-first baseline.</p>
+          <p class="small">3) Incremental contribution covers added build + run cost within 12 months.</p>
+          <p class="small">4) It does not erode protected offline revenue segments (including major donors).</p>
+        </article>
+      </div>
+      <article class="card" style="margin-top: 14px;">
+        <h3>Viability Narrative (Unit Economics for NPOs)<span class="e-tag primary">Primary</span></h3>
+        <p class="small"><strong>Condition for viability:</strong> migration is viable only when NPO net proceeds in hybrid exceed baseline net proceeds after commission.</p>
+        <p class="small"><strong>Break-even condition (per reached donor):</strong></p>
+        <p class="small"><code>conv_hybrid * [s_off * (avg_off - c_off) + s_on * avg_on * (1 - r)] - mail_hybrid &gt; conv_base * (avg_base - c_off) - mail_base</code></p>
+        <p class="small">where <code>r</code> is FRU effective commission rate (default 2.9%).</p>
+        <p class="small"><strong>In plain terms:</strong> hybrid is worth doing only if the net dollars generated per mailed donor are higher than baseline. Compute expected net in hybrid (offline net + online net after commission, minus mailing cost) and compare it to baseline net (offline net minus mailing cost). If hybrid is higher, the switch is financially viable for the nonprofit.</p>
+        <p class="small"><strong>Execution plan:</strong></p>
+        <p class="small">1) Use this condition to define account-level break-even in the ROI model.</p>
+        <p class="small">2) Run pilot cohorts to validate actual conversion uplift and online share shift.</p>
+        <p class="small">3) Build ingestion for current rails as support and data-enrichment foundation; scale migration only where pilots clear the break-even line.</p>
+        <p class="small"><strong>Where to evaluate it:</strong> switch to <em>NPO-Facing Story &amp; ROI</em> and use <em>Economics of Switching Check Donors to Online Giving</em> for scenario calculations.</p>
+        <p class="small">Derived from internal concept and interview research; GPV client baselines can be layered in later.</p>
+      </article>
+    </section>
+
+    <section class="section" data-view="customer">
+      <h2>Why Move Donors Online (Generational Trends)</h2>
+      <p class="small">Narrative for nonprofit operators: keep offline pathways for protected segments, and migrate reachable donors where digital completion and stewardship outcomes are stronger.</p>
+      <div class="grid cols-2">
+        <article class="card">
+          <h3>Share of Charitable Dollars by Generation<span class="e-tag secondary">Secondary</span></h3>
+          <div id="givingBars"></div>
+          <p class="small">Estimated 2022 split: Matures 20.2%, Boomers 40.8%, Gen X 22.9%, Millennials 13.9%, Gen Z 2.2% (secondary summary of Giving USA special report).</p>
+        </article>
+
+        <article class="card">
+          <h3>Online Preference Signals by Generation<span class="e-tag secondary">Secondary</span></h3>
+          <div id="onlineBars"></div>
+          <p class="small">Comparable preference metrics are shown for Boomers/Gen X/Millennials only; Matures and Gen Z are shown as not-comparable in this source set.</p>
+        </article>
+      </div>
+
+      <article class="card" style="margin-top: 14px;">
+        <h3>U.S. Check Payments (all uses, count)<span class="e-tag primary">Primary</span></h3>
+        <div class="metric" id="checkDeclineMetric">40.9B payments → 14.5B payments</div>
+        <p class="muted" id="checkDeclineNote">2000 to 2021 number of check payments, showing long-term decline in check behavior.</p>
+        <p class="small">Source: <a href="https://www.federalreserve.gov/newsevents/pressreleases/other20230421a.htm" target="_blank" rel="noopener noreferrer">Federal Reserve Payments Study (2023 release, 2021 data)</a></p>
+      </article>
+
+      <article class="card" style="margin-top: 14px;">
+        <h3>Historical Benchmark Panel<span class="e-tag historical">Historical</span></h3>
+        <div class="split-2016">
+          <div class="donut-2016" aria-label="2016 donation split: Check 44%, Card 22%, Digital wallet 21%, Cash 13%"></div>
+          <div class="split-legend">
+            <div class="item"><span class="swatch check"></span><span>Check</span><strong>44%</strong></div>
+            <div class="item"><span class="swatch card-method"></span><span>Card</span><strong>22%</strong></div>
+            <div class="item"><span class="swatch wallet"></span><span>Digital wallet</span><strong>21%</strong></div>
+            <div class="item"><span class="swatch cash"></span><span>Cash</span><strong>13%</strong></div>
+          </div>
+        </div>
+        <p class="muted">PayPal + GuideStar 2016 survey split. Useful as historical context only.</p>
+      </article>
+
+      <article class="card" style="margin-top: 14px;">
+        <h3>Generation Profile<span class="e-tag secondary">Secondary</span></h3>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Generation</th>
+                <th>Share of U.S. population</th>
+                <th>Online giving signal</th>
+                <th>Direct-mail/check signal</th>
+              </tr>
+            </thead>
+            <tbody id="generationTable"></tbody>
+          </table>
+        </div>
+        <p class="small">Sources: <a href="https://sylogist.com/blog/charitable-giving-across-generations-2/" target="_blank" rel="noopener noreferrer">Sylogist generation split summary</a>, <a href="https://nonprofitssource.com/online-giving-statistics/" target="_blank" rel="noopener noreferrer">Nonprofits Source online-by-generation stats</a>, <a href="https://afpglobal.org/direct-mail-dead-long-live-direct-mail" target="_blank" rel="noopener noreferrer">AFP direct-mail behavior by age</a>.</p>
+      </article>
+
+    </section>
+
+    <section class="section" data-view="customer">
+      <h2>Economics of Switching Check Donors to Online Giving</h2>
+      <div class="calc-layout">
+        <article class="card">
+          <h3>Scenario 1: Current Offline Flow (Baseline)</h3>
+          <div class="scenario-input-grid">
+            <div>
+              <label for="base_reach">Direct-mail reached donors (count)</label>
+              <input id="base_reach" type="number" min="0" step="1000" value="10000" />
+            </div>
+            <div>
+              <div class="label-with-hint">
+                <label for="base_postal_cost">Cost per mail sent (USD)</label>
+                <details class="hint">
+                  <summary>i</summary>
+                  <div class="hint-pop">Default <strong>$0.20</strong> per mail piece assumes scaled print + postage + list ops for standard direct-mail sends.</div>
+                </details>
+              </div>
+              <input id="base_postal_cost" name="base_postal_cost" type="number" min="0" step="0.01" value="0.20" autocomplete="off" inputmode="decimal" />
+            </div>
+            <div>
+              <label for="base_conv">Conversion to donation (%)</label>
+              <input id="base_conv" type="number" min="0" max="100" step="0.1" value="12" />
+            </div>
+            <div>
+              <label for="base_avg_gift">Average donation (USD)</label>
+              <input id="base_avg_gift" type="number" min="1" step="1" value="500" />
+            </div>
+
+            <div class="group-title">Offline donation form split (%)</div>
+            <div>
+              <label for="split_check">Checks</label>
+              <input id="split_check" type="number" min="0" max="100" step="0.1" value="80" />
+            </div>
+            <div>
+              <label for="split_cash">Cash</label>
+              <input id="split_cash" type="number" min="0" max="100" step="0.1" value="15" />
+            </div>
+            <div>
+              <label for="split_bank">Bank details</label>
+              <input id="split_bank" type="number" min="0" max="100" step="0.1" value="3" />
+            </div>
+            <div>
+              <label for="split_other">Other</label>
+              <input id="split_other" type="number" min="0" max="100" step="0.1" value="2" />
+            </div>
+            <div class="small" id="splitStatus" style="grid-column:1/-1;">Split totals 100.0%</div>
+
+            <div class="group-title">Offline processing cost (per donation)</div>
+            <div>
+              <label for="cost_lockbox">Lockbox/caging (USD)</label>
+              <input id="cost_lockbox" type="number" min="0" step="0.1" value="1.5" />
+            </div>
+            <div>
+              <div class="label-with-hint">
+                <label for="cost_internal">Internal handling (USD)</label>
+                <details class="hint">
+                  <summary>i</summary>
+                  <div class="hint-pop">Default <strong>$1.50</strong> per offline donation covers reconciliation, exception handling, and CRM/admin effort.</div>
+                </details>
+              </div>
+              <input id="cost_internal" type="number" min="0" step="0.1" value="1.5" />
+            </div>
+          </div>
+
+          <div class="scenario-kpi">
+            <div class="row"><span>Donations count</span><strong id="baseDonations">0</strong></div>
+            <div class="row"><span>Checks / Cash / Bank / Other</span><strong id="baseSplitCounts">0 / 0 / 0 / 0</strong></div>
+            <div class="row"><span>Gross donations</span><strong id="baseGross">$0</strong></div>
+            <div class="row"><span>Outreach spend</span><strong id="baseMailSpendOut">-$0</strong></div>
+            <div class="row"><span>Processing cost</span><strong id="baseProc">-$0</strong></div>
+            <div class="row divider"><span></span></div>
+            <div class="row"><span>Bottom line (net)</span><strong id="baseBottom">$0</strong></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3>Scenario 2: Hybrid Flow (Offline + Online)</h3>
+          <div class="scenario-input-grid">
+            <div>
+              <label>Direct-mail reached donors (same as baseline)</label>
+              <div class="metric" id="hybReachMirror" style="font-size:1.35rem; margin-top:2px;">10,000</div>
+            </div>
+            <div>
+              <div class="label-with-hint">
+                <label for="hyb_postal_cost">Cost per mail sent (USD)</label>
+                <details class="hint">
+                  <summary>i</summary>
+                  <div class="hint-pop">Default starts at baseline <strong>$0.20</strong>. Increase slightly if personalized QR/PURL print treatment raises per-piece mailing cost.</div>
+                </details>
+              </div>
+              <input id="hyb_postal_cost" name="hyb_postal_cost" type="number" min="0" step="0.01" value="0.20" autocomplete="off" inputmode="decimal" />
+            </div>
+            <div>
+              <label for="hyb_conv">Conversion to donation (%)</label>
+              <input id="hyb_conv" type="number" min="0" max="100" step="0.1" value="13.2" />
+            </div>
+            <div class="hyb-uplift-cell">
+              <div class="small" id="hybConvUpliftNote">+10.0% uplift vs baseline</div>
+            </div>
+
+            <div class="group-title">Offline donations in hybrid</div>
+            <div>
+              <label for="hyb_offline_share">Share of offline donations (%)</label>
+              <input id="hyb_offline_share" type="number" min="0" max="100" step="0.1" value="65" />
+            </div>
+            <div>
+              <label for="hyb_avg_gift_offline">Average offline donation (USD)</label>
+              <input id="hyb_avg_gift_offline" type="number" min="1" step="1" value="500" />
+            </div>
+
+            <div class="group-title">Offline donation form split (%)</div>
+            <div>
+              <label for="hyb_split_check">Checks</label>
+              <input id="hyb_split_check" type="number" min="0" max="100" step="0.1" value="80" />
+            </div>
+            <div>
+              <label for="hyb_split_cash">Cash</label>
+              <input id="hyb_split_cash" type="number" min="0" max="100" step="0.1" value="15" />
+            </div>
+            <div>
+              <label for="hyb_split_bank">Bank details</label>
+              <input id="hyb_split_bank" type="number" min="0" max="100" step="0.1" value="3" />
+            </div>
+            <div>
+              <label for="hyb_split_other">Other</label>
+              <input id="hyb_split_other" type="number" min="0" max="100" step="0.1" value="2" />
+            </div>
+            <div class="small" id="hybSplitStatus" style="grid-column:1/-1;">Split totals 100.0%</div>
+
+            <div class="group-title">Offline processing cost (per donation) (same as baseline)</div>
+            <div>
+              <label for="hyb_cost_lockbox_mirror">Lockbox/caging (USD)</label>
+              <input id="hyb_cost_lockbox_mirror" type="number" disabled />
+            </div>
+            <div>
+              <div class="label-with-hint">
+                <label for="hyb_cost_internal_mirror">Internal handling (USD)</label>
+                <details class="hint">
+                  <summary>i</summary>
+                  <div class="hint-pop">Mirrors baseline default <strong>$1.50</strong> per offline donation for operational parity.</div>
+                </details>
+              </div>
+              <input id="hyb_cost_internal_mirror" type="number" disabled />
+            </div>
+
+            <div class="group-title">Online donations</div>
+            <div>
+              <label for="hyb_avg_gift_online">Average online donation (USD)</label>
+              <input id="hyb_avg_gift_online" type="number" min="1" step="1" value="500" />
+            </div>
+            <div>
+              <label for="hyb_online_fee">Online processing commission (%)</label>
+              <input id="hyb_online_fee" type="number" min="0" max="100" step="0.1" value="2.9" />
+            </div>
+            <div class="small" style="grid-column:1/-1;">
+              Offline branch uses the same split and offline processing cost structure as Scenario 1.
+            </div>
+          </div>
+
+          <div class="scenario-kpi">
+            <div class="row"><span>Offline donations count</span><strong id="hybOfflineCount">0</strong></div>
+            <div class="row"><span>Offline split (C/Ca/B/O)</span><strong id="hybSplitCounts">0 / 0 / 0 / 0</strong></div>
+            <div class="row"><span>Gross donations (offline)</span><strong id="hybGrossOffline">$0</strong></div>
+            <div class="row"><span>Offline cost: lockbox/caging</span><strong id="hybProcLockbox">-$0</strong></div>
+            <div class="row"><span>Offline cost: internal handling</span><strong id="hybProcInternal">-$0</strong></div>
+            <div class="row"><span>Offline processing subtotal</span><strong id="hybProcOffline">-$0</strong></div>
+            <div class="row divider"><span></span></div>
+            <div class="row"><span>Online donations count</span><strong id="hybOnlineCount">0</strong></div>
+            <div class="row"><span>Gross donations (online)</span><strong id="hybGrossOnline">$0</strong></div>
+            <div class="row"><span>Online processing cost (fee)</span><strong id="hybProcOnline">-$0</strong></div>
+            <div class="row divider"><span></span></div>
+            <div class="row"><span>Total donations count</span><strong id="hybDonations">0</strong></div>
+            <div class="row"><span>Gross donations (total)</span><strong id="hybGross">$0</strong></div>
+            <div class="row"><span>Total processing cost</span><strong id="hybProc">-$0</strong></div>
+            <div class="row"><span>Outreach spend</span><strong id="hybMailSpendOut">-$0</strong></div>
+            <div class="row divider"><span></span></div>
+            <div class="row"><span>Bottom line (net)</span><strong id="hybBottom">$0</strong></div>
+          </div>
+
+        </article>
+      </div>
+
+      <div class="summary-box dedicated-row">
+        <div id="decisionPill" class="pill warn">Review</div>
+        <div class="decision" id="decisionText">Compare baseline vs hybrid.</div>
+        <p class="muted" id="decisionNote">
+          Scenario is valid in all cases; switch only when bottom line improves versus baseline.
+        </p>
+        <div class="scenario-grid" style="margin-top:12px;">
+          <div class="scenario-card">
+            <div class="scenario-title">Delta vs Baseline</div>
+            <table class="scenario-table">
+              <tbody>
+                <tr><td>Incremental donations (count)</td><td id="deltaDon">0</td></tr>
+                <tr><td>Gross donation delta</td><td id="deltaGross">$0</td></tr>
+                <tr><td>Processing cost delta</td><td id="deltaProc">$0</td></tr>
+                <tr><td>Outreach spend delta</td><td id="deltaMail">$0</td></tr>
+                <tr class="key-row"><td>Bottom-line delta</td><td id="deltaBottom">$0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="scenario-card">
+            <div class="scenario-title">Required Hybrid Conversion</div>
+            <table class="scenario-table">
+              <tbody>
+                <tr><td>Break-even conversion</td><td id="requiredHybridConv">0%</td></tr>
+                <tr><td>Actual hybrid conversion</td><td id="hybConvOut">0%</td></tr>
+                <tr><td>Status</td><td id="convStatus">N/A</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" data-view="internal">
+      <article class="card">
+        <h3>Sources</h3>
+        <div class="sources">
+          <p><code>_inbox/Research results.md</code> (internal interview synthesis: Bible League, Daily Bread, MAZON/Agilis, CRC, TGC)</p>
+          <p><a href="https://givingusa.org/giving-usa-2025-u-s-charitable-giving-grew-to-592-50-billion-in-2024-lifted-by-stock-market-gains/" target="_blank" rel="noopener noreferrer">Giving USA 2025 total giving</a></p>
+          <p><a href="https://doublethedonation.com/tips/generational-giving/" target="_blank" rel="noopener noreferrer">Generational giving split summary (secondary; cites Giving USA Special Report)</a></p>
+          <p><a href="https://www.nonprofitpro.com/article/3-insights-from-giving-usas-giving-by-generation-special-report/" target="_blank" rel="noopener noreferrer">Giving USA by generation context (NonProfit PRO summary)</a></p>
+          <p><a href="https://www.paypalobjects.com/digitalassets/c/website/marketing/global/shared/global/media-resources/documents/understanding-costs-charitable-giving.pdf" target="_blank" rel="noopener noreferrer">PayPal + GuideStar report (2016): donation method split and processing costs</a></p>
+          <p><a href="https://newsroom.paypal-corp.com/Study-Finds-Payment-Method-Matters-When-Donating-to-Charity" target="_blank" rel="noopener noreferrer">PayPal study announcement (2016)</a></p>
+          <p><a href="https://sylogist.com/blog/charitable-giving-across-generations-2/" target="_blank" rel="noopener noreferrer">Sylogist generation stats summary</a></p>
+          <p><a href="https://nonprofitssource.com/online-giving-statistics/" target="_blank" rel="noopener noreferrer">Nonprofits Source online giving statistics</a></p>
+          <p><a href="https://afpglobal.org/direct-mail-dead-long-live-direct-mail" target="_blank" rel="noopener noreferrer">AFP direct-mail behavior and Millennial postal-to-online signal</a></p>
+          <p><a href="https://www.federalreserve.gov/newsevents/pressreleases/other20131219a.htm" target="_blank" rel="noopener noreferrer">Federal Reserve 2013 payments study</a></p>
+          <p><a href="https://www.federalreserve.gov/newsevents/pressreleases/other20161222a.htm" target="_blank" rel="noopener noreferrer">Federal Reserve 2016 payments study</a></p>
+          <p><a href="https://www.federalreserve.gov/newsevents/pressreleases/other20230421a.htm" target="_blank" rel="noopener noreferrer">Federal Reserve payments study (2023 release, 2021 data)</a></p>
+          <p><a href="https://www.nextafter.com/the-generosity-report/online-giving-trends/" target="_blank" rel="noopener noreferrer">Blackbaud online trend compilation</a></p>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <script>
+    const MARKET = {
+      tam: 592.5e9,
+      checks2000: 40.9e9,
+      checks2021: 14.5e9
+    };
+
+    const GENERATIONS = [
+      {
+        name: "Matures (born before 1946)",
+        short: "Matures",
+        pop: "<8% (Silent+Greatest combined)",
+        popNum: 8,
+        giving: "20.2%",
+        givingNum: 20.2,
+        online: "Not cleanly reported",
+        onlineNum: null,
+        check: "Older cohorts remain strongest check users (proxy)"
+      },
+      {
+        name: "Boomers (1946-1964)",
+        short: "Boomers",
+        pop: "20.58%",
+        popNum: 20.58,
+        giving: "40.8%",
+        givingNum: 40.8,
+        online: "59% prefer online giving",
+        onlineNum: 59,
+        check: "Donors >45: 67% prefer direct-mail appeals (proxy)"
+      },
+      {
+        name: "Gen X (1965-1980)",
+        short: "Gen X",
+        pop: "19.53%",
+        popNum: 19.53,
+        giving: "22.9%",
+        givingNum: 22.9,
+        online: "65% prefer online giving",
+        onlineNum: 65,
+        check: "Mixed transition: mail remains relevant for 45+ cohorts (proxy)"
+      },
+      {
+        name: "Millennials (1981-1996)",
+        short: "Millennials",
+        pop: "21.71%",
+        popNum: 21.71,
+        giving: "13.9%",
+        givingNum: 13.9,
+        online: "74% prefer online giving",
+        onlineNum: 74,
+        check: "53% of postal responders complete online (not check)"
+      },
+      {
+        name: "Gen Z (1997-2012)",
+        short: "Gen Z",
+        pop: "20.88%",
+        popNum: 20.88,
+        giving: "2.2%",
+        givingNum: 2.2,
+        online: "No directly comparable online-preference metric in current source set",
+        onlineNum: null,
+        check: "No credible evidence of meaningful mailed-check share"
+      }
+    ];
+
+    const calcInputIds = [
+      "base_reach", "base_postal_cost", "base_conv", "base_avg_gift",
+      "split_check", "split_cash", "split_bank", "split_other",
+      "hyb_split_check", "hyb_split_cash", "hyb_split_bank", "hyb_split_other",
+      "cost_lockbox", "cost_internal",
+      "hyb_postal_cost", "hyb_conv", "hyb_offline_share", "hyb_avg_gift_offline", "hyb_avg_gift_online", "hyb_online_fee"
+    ];
+
+    function fmtUSD(n) {
+      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+    }
+
+    function fmtCompactUSD(n) {
+      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 2 }).format(n);
+    }
+
+    function fmtUSDNegative(n) {
+      if (!n) return "$0";
+      return `-${fmtUSD(Math.abs(n))}`;
+    }
+
+    function fmtPct(n, digits = 1) {
+      return `${n.toFixed(digits)}%`;
+    }
+
+    function pct(v) {
+      return Number(v) / 100;
+    }
+
+    function initMarketEstimator() {
+      const offlineShare = document.getElementById("offlineShare");
+      const serviceableFit = document.getElementById("serviceableFit");
+      const obtainable24 = document.getElementById("obtainable24");
+
+      const outputs = {
+        offlineShareOut: document.getElementById("offlineShareOut"),
+        serviceableFitOut: document.getElementById("serviceableFitOut"),
+        obtainable24Out: document.getElementById("obtainable24Out"),
+        surfaceValue: document.getElementById("surfaceValue"),
+        samValue: document.getElementById("samValue"),
+        somValue: document.getElementById("somValue")
+      };
+
+      function render() {
+        const off = Number(offlineShare.value);
+        const fit = Number(serviceableFit.value);
+        const som = Number(obtainable24.value);
+
+        const surface = MARKET.tam * (off / 100);
+        const sam = surface * (fit / 100);
+        const somVal = sam * (som / 100);
+
+        outputs.offlineShareOut.textContent = `${off}%`;
+        outputs.serviceableFitOut.textContent = `${fit}%`;
+        outputs.obtainable24Out.textContent = `${som}%`;
+        outputs.surfaceValue.textContent = fmtCompactUSD(surface);
+        outputs.samValue.textContent = fmtCompactUSD(sam);
+        outputs.somValue.textContent = fmtCompactUSD(somVal);
+      }
+
+      [offlineShare, serviceableFit, obtainable24].forEach((el) => el.addEventListener("input", render));
+      render();
+    }
+
+    function initGenerationSection() {
+      const table = document.getElementById("generationTable");
+      const givingBars = document.getElementById("givingBars");
+      const onlineBars = document.getElementById("onlineBars");
+
+      GENERATIONS.forEach((g) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${g.name}</strong></td>
+          <td>${g.pop}</td>
+          <td>${g.online}</td>
+          <td>${g.check}</td>
+        `;
+        table.appendChild(tr);
+
+        const givingRow = document.createElement("div");
+        givingRow.className = "bar-row";
+        const givingIsNum = typeof g.givingNum === "number";
+        givingRow.innerHTML = `
+          <div>${g.short}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${givingIsNum ? g.givingNum : 0}%; ${givingIsNum ? "" : "background:#9aaea5;"}"></div></div>
+          <strong>${givingIsNum ? `${g.givingNum}%` : "N/A"}</strong>
+        `;
+        givingBars.appendChild(givingRow);
+
+        const onlineRow = document.createElement("div");
+        onlineRow.className = "bar-row";
+        const onlineIsNum = typeof g.onlineNum === "number";
+        onlineRow.innerHTML = `
+          <div>${g.short}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${onlineIsNum ? Math.min(g.onlineNum, 100) : 0}%; ${onlineIsNum ? "background:linear-gradient(90deg,#d97706,#f59e0b);" : "background:#9aaea5;"}"></div></div>
+          <strong>${onlineIsNum ? `${g.onlineNum}%` : "N/A"}</strong>
+        `;
+        onlineBars.appendChild(onlineRow);
+      });
+    }
+
+    function initViewToggle() {
+      const buttons = Array.from(document.querySelectorAll(".view-btn"));
+      const sections = Array.from(document.querySelectorAll("[data-view]"));
+      if (!buttons.length || !sections.length) return;
+
+      function apply(view) {
+        buttons.forEach((btn) => btn.classList.toggle("active", btn.dataset.viewTarget === view));
+        sections.forEach((section) => {
+          section.hidden = section.dataset.view !== view;
+        });
+      }
+
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", () => apply(btn.dataset.viewTarget));
+      });
+
+      apply("internal");
+    }
+
+    function initCalculator() {
+      const els = Object.fromEntries(calcInputIds.map((id) => [id, document.getElementById(id)]));
+
+      function num(id) {
+        return Number(els[id].value || 0);
+      }
+
+      function compute() {
+        const reach = num("base_reach");
+        const baseMailCost = num("base_postal_cost");
+        const convBase = pct(num("base_conv"));
+        const baseAvgGift = num("base_avg_gift");
+
+        const splitCheckRaw = num("split_check");
+        const splitCashRaw = num("split_cash");
+        const splitBankRaw = num("split_bank");
+        const splitOtherRaw = num("split_other");
+        const splitTotal = splitCheckRaw + splitCashRaw + splitBankRaw + splitOtherRaw;
+        const splitSafe = splitTotal > 0 ? splitTotal : 100;
+
+        const hybSplitCheckRaw = num("hyb_split_check");
+        const hybSplitCashRaw = num("hyb_split_cash");
+        const hybSplitBankRaw = num("hyb_split_bank");
+        const hybSplitOtherRaw = num("hyb_split_other");
+        const hybSplitTotal = hybSplitCheckRaw + hybSplitCashRaw + hybSplitBankRaw + hybSplitOtherRaw;
+        const hybSplitSafe = hybSplitTotal > 0 ? hybSplitTotal : 100;
+
+        const wCheck = splitCheckRaw / splitSafe;
+        const wCash = splitCashRaw / splitSafe;
+        const wBank = splitBankRaw / splitSafe;
+        const wOther = splitOtherRaw / splitSafe;
+
+        const hybWCheck = hybSplitCheckRaw / hybSplitSafe;
+        const hybWCash = hybSplitCashRaw / hybSplitSafe;
+        const hybWBank = hybSplitBankRaw / hybSplitSafe;
+        const hybWOther = hybSplitOtherRaw / hybSplitSafe;
+
+        const offlineUnitCost = num("cost_lockbox") + num("cost_internal");
+        const lockboxUnitCost = num("cost_lockbox");
+        const internalUnitCost = num("cost_internal");
+        const hybMailCost = num("hyb_postal_cost");
+        const convHybrid = pct(num("hyb_conv"));
+        const shareOffline = pct(num("hyb_offline_share"));
+        const hybAvgGiftOffline = num("hyb_avg_gift_offline");
+        const shareOnline = 1 - shareOffline;
+        const hybAvgGiftOnline = num("hyb_avg_gift_online");
+        const onlineFeeRate = pct(num("hyb_online_fee"));
+
+        const baseMailSpend = reach * baseMailCost;
+        const hybMailSpend = reach * hybMailCost;
+
+        const baseDon = Math.max(0, reach * convBase);
+        const hybDon = Math.max(0, reach * convHybrid);
+        const hybOfflineDon = hybDon * shareOffline;
+        const hybOnlineDon = hybDon * shareOnline;
+
+        const baseGross = baseDon * baseAvgGift;
+        const hybGrossOffline = hybOfflineDon * hybAvgGiftOffline;
+        const hybOnlineGross = hybOnlineDon * hybAvgGiftOnline;
+        const hybGross = hybGrossOffline + hybOnlineGross;
+
+        const baseProcLockbox = baseDon * lockboxUnitCost;
+        const baseProcInternal = baseDon * internalUnitCost;
+        const baseProc = baseProcLockbox + baseProcInternal;
+        const hybProcLockbox = hybOfflineDon * lockboxUnitCost;
+        const hybProcInternal = hybOfflineDon * internalUnitCost;
+        const hybProcOffline = hybProcLockbox + hybProcInternal;
+        const hybProcOnline = hybOnlineGross * onlineFeeRate;
+        const hybProc = hybProcOffline + hybProcOnline;
+
+        const baseBottom = baseGross - baseProc - baseMailSpend;
+        const hybBottom = hybGross - hybProc - hybMailSpend;
+
+        const deltaDon = hybDon - baseDon;
+        const deltaGross = hybGross - baseGross;
+        const deltaCost = hybProc - baseProc;
+        const deltaMail = hybMailSpend - baseMailSpend;
+        const deltaBottom = hybBottom - baseBottom;
+
+        const hybUnitNet = (shareOffline * (hybAvgGiftOffline - offlineUnitCost)) + (shareOnline * hybAvgGiftOnline * (1 - onlineFeeRate));
+        const requiredHybridConv = (reach > 0 && hybUnitNet > 0)
+          ? ((baseBottom + hybMailSpend) / (reach * hybUnitNet))
+          : Infinity;
+
+        const baseCheck = baseDon * wCheck;
+        const baseCash = baseDon * wCash;
+        const baseBank = baseDon * wBank;
+        const baseOther = baseDon * wOther;
+
+        const hybCheck = hybOfflineDon * hybWCheck;
+        const hybCash = hybOfflineDon * hybWCash;
+        const hybBank = hybOfflineDon * hybWBank;
+        const hybOther = hybOfflineDon * hybWOther;
+
+        document.getElementById("splitStatus").textContent =
+          Math.abs(splitTotal - 100) < 0.05
+            ? `Split totals ${splitTotal.toFixed(1)}%`
+            : `Split totals ${splitTotal.toFixed(1)}% (calculator normalizes to 100% for math)`;
+        document.getElementById("hybSplitStatus").textContent =
+          Math.abs(hybSplitTotal - 100) < 0.05
+            ? `Split totals ${hybSplitTotal.toFixed(1)}%`
+            : `Split totals ${hybSplitTotal.toFixed(1)}% (calculator normalizes to 100% for math)`;
+
+        document.getElementById("hyb_cost_lockbox_mirror").value = lockboxUnitCost.toFixed(2);
+        document.getElementById("hyb_cost_internal_mirror").value = internalUnitCost.toFixed(2);
+
+        document.getElementById("hybReachMirror").textContent = Math.round(reach).toLocaleString("en-US");
+        document.getElementById("baseGross").textContent = fmtUSD(baseGross);
+        document.getElementById("baseProc").textContent = fmtUSDNegative(baseProc);
+        document.getElementById("baseMailSpendOut").textContent = fmtUSDNegative(baseMailSpend);
+        document.getElementById("baseBottom").textContent = fmtUSD(baseBottom);
+        document.getElementById("baseDonations").textContent = Math.round(baseDon).toLocaleString("en-US");
+
+        document.getElementById("hybGrossOffline").textContent = fmtUSD(hybGrossOffline);
+        document.getElementById("hybGrossOnline").textContent = fmtUSD(hybOnlineGross);
+        document.getElementById("hybGross").textContent = fmtUSD(hybGross);
+        document.getElementById("hybProcLockbox").textContent = fmtUSDNegative(hybProcLockbox);
+        document.getElementById("hybProcInternal").textContent = fmtUSDNegative(hybProcInternal);
+        document.getElementById("hybProcOffline").textContent = fmtUSDNegative(hybProcOffline);
+        document.getElementById("hybProcOnline").textContent = fmtUSDNegative(hybProcOnline);
+        document.getElementById("hybProc").textContent = fmtUSDNegative(hybProc);
+        document.getElementById("hybMailSpendOut").textContent = fmtUSDNegative(hybMailSpend);
+        document.getElementById("hybBottom").textContent = fmtUSD(hybBottom);
+        document.getElementById("hybDonations").textContent = Math.round(hybDon).toLocaleString("en-US");
+        document.getElementById("hybOfflineCount").textContent = Math.round(hybOfflineDon).toLocaleString("en-US");
+        document.getElementById("hybOnlineCount").textContent = Math.round(hybOnlineDon).toLocaleString("en-US");
+        document.getElementById("requiredHybridConv").textContent = isFinite(requiredHybridConv) ? fmtPct(requiredHybridConv * 100, 2) : "N/A";
+        document.getElementById("hybConvOut").textContent = fmtPct(convHybrid * 100, 2);
+        const upliftPct = convBase > 0 ? ((convHybrid / convBase) - 1) * 100 : 0;
+        const upliftSign = upliftPct >= 0 ? "+" : "";
+        document.getElementById("hybConvUpliftNote").textContent =
+          convBase > 0
+            ? `${upliftSign}${upliftPct.toFixed(1)}% uplift vs baseline`
+            : "Uplift unavailable (baseline conversion is 0%)";
+
+        document.getElementById("baseSplitCounts").textContent =
+          `${Math.round(baseCheck).toLocaleString("en-US")} / ${Math.round(baseCash).toLocaleString("en-US")} / ${Math.round(baseBank).toLocaleString("en-US")} / ${Math.round(baseOther).toLocaleString("en-US")}`;
+        document.getElementById("hybSplitCounts").textContent =
+          `${Math.round(hybCheck).toLocaleString("en-US")} / ${Math.round(hybCash).toLocaleString("en-US")} / ${Math.round(hybBank).toLocaleString("en-US")} / ${Math.round(hybOther).toLocaleString("en-US")}`;
+        document.getElementById("deltaDon").textContent = Math.round(deltaDon).toLocaleString("en-US");
+        document.getElementById("deltaGross").textContent = fmtUSD(deltaGross);
+        document.getElementById("deltaProc").textContent = fmtUSD(deltaCost);
+        document.getElementById("deltaMail").textContent = fmtUSD(deltaMail);
+        document.getElementById("deltaBottom").textContent = fmtUSD(deltaBottom);
+
+        const decisionPill = document.getElementById("decisionPill");
+        const decisionText = document.getElementById("decisionText");
+        const decisionNote = document.getElementById("decisionNote");
+        const convStatus = document.getElementById("convStatus");
+
+        if (deltaBottom > 0) {
+          decisionPill.className = "pill ok";
+          decisionPill.textContent = "Positive case";
+          decisionText.textContent = "Hybrid model improves net donations.";
+          decisionNote.textContent = `Bottom-line gain ${fmtUSD(deltaBottom)} with hybrid conversion ${fmtPct(convHybrid * 100, 2)} and online share ${fmtPct(shareOnline * 100, 1)}.`;
+          convStatus.textContent = isFinite(requiredHybridConv) && convHybrid >= requiredHybridConv ? "Above break-even" : "Positive under current cost mix";
+        } else {
+          decisionPill.className = "pill warn";
+          decisionPill.textContent = "Not worth it";
+          decisionText.textContent = "Current assumptions do not justify switching.";
+          decisionNote.textContent = "Increase hybrid conversion, optimize online share, or reduce outreach/processing costs.";
+          convStatus.textContent = isFinite(requiredHybridConv)
+            ? `Needs ${fmtPct(requiredHybridConv * 100, 2)} conversion`
+            : "Break-even undefined";
+        }
+      }
+
+      Object.values(els).forEach((input) => input.addEventListener("input", compute));
+      compute();
+    }
+
+    function initStaticMetrics() {
+      document.getElementById("tamMetric").textContent = fmtCompactUSD(MARKET.tam);
+      document.getElementById("checkDeclineMetric").textContent = `${(MARKET.checks2000 / 1e9).toFixed(1)}B payments → ${(MARKET.checks2021 / 1e9).toFixed(1)}B payments`;
+      const decline = ((MARKET.checks2021 - MARKET.checks2000) / MARKET.checks2000) * 100;
+      document.getElementById("checkDeclineNote").textContent = `2000 to 2021 number of check payments (${decline.toFixed(1)}% change), showing long-term decline in check behavior.`;
+    }
+
+    initStaticMetrics();
+    initMarketEstimator();
+    initGenerationSection();
+    initCalculator();
+    initViewToggle();
+  </script>
+</body>
+</html>
